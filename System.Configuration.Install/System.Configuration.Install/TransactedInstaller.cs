@@ -11,25 +11,25 @@ namespace System.Configuration.Install
 		/// <exception cref="T:System.Exception">The installation failed, and is being rolled back. </exception>
 		public override void Install(IDictionary savedState)
 		{
-			if (base.Context == null)
+			if (Context == null)
 			{
-				base.Context = new InstallContext();
+				Context = new InstallContext();
 			}
-			base.Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoTransacted"));
+			Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoTransacted"));
 			try
 			{
-				bool flag = true;
+				var flag = true;
 				try
 				{
-					base.Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoBeginInstall"));
+					Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoBeginInstall"));
 					base.Install(savedState);
 				}
 				catch (Exception ex)
 				{
 					flag = false;
-					base.Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoException"));
-					Installer.LogException(ex, base.Context);
-					base.Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoBeginRollback"));
+					Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoException"));
+					LogException(ex, Context);
+					Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoBeginRollback"));
 					try
 					{
 						Rollback(savedState);
@@ -37,25 +37,25 @@ namespace System.Configuration.Install
 					catch (Exception)
 					{
 					}
-					base.Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoRollbackDone"));
+					Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoRollbackDone"));
 					throw new InvalidOperationException(Res.GetString("InstallRollback"), ex);
 				}
 				if (flag)
 				{
-					base.Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoBeginCommit"));
+					Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoBeginCommit"));
 					try
 					{
 						Commit(savedState);
 					}
 					finally
 					{
-						base.Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoCommitDone"));
+						Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoCommitDone"));
 					}
 				}
 			}
 			finally
 			{
-				base.Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoTransactedDone"));
+				Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoTransactedDone"));
 			}
 		}
 
@@ -63,18 +63,18 @@ namespace System.Configuration.Install
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer after the installation completed. </param>
 		public override void Uninstall(IDictionary savedState)
 		{
-			if (base.Context == null)
+			if (Context == null)
 			{
-				base.Context = new InstallContext();
+				Context = new InstallContext();
 			}
-			base.Context.LogMessage(Environment.NewLine + Environment.NewLine + Res.GetString("InstallInfoBeginUninstall"));
+			Context.LogMessage(Environment.NewLine + Environment.NewLine + Res.GetString("InstallInfoBeginUninstall"));
 			try
 			{
 				base.Uninstall(savedState);
 			}
 			finally
 			{
-				base.Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoUninstallDone"));
+				Context.LogMessage(Environment.NewLine + Res.GetString("InstallInfoUninstallDone"));
 			}
 		}
 	}

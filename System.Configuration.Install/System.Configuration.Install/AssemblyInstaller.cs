@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Xml;
 using Newtonsoft.Json;
 
 namespace System.Configuration.Install
@@ -12,46 +10,20 @@ namespace System.Configuration.Install
 	/// <summary>Loads an assembly, and runs all the installers in it.</summary>
 	public class AssemblyInstaller : Installer
 	{
-		private Assembly assembly;
+		private static bool _helpPrinted;
 
-		private string[] commandLine;
-
-		private bool useNewContext;
-
-		private static bool helpPrinted;
-
-		private bool initialized;
+		private bool _initialized;
 
 		/// <summary>Gets or sets the assembly to install.</summary>
 		/// <returns>An <see cref="T:System.Reflection.Assembly" /> that defines the assembly to install.</returns>
 		/// <exception cref="T:System.ArgumentNullException">The property value is null. </exception>
 		[ResDescription("Desc_AssemblyInstaller_Assembly")]
-		public Assembly Assembly
-		{
-			get
-			{
-				return assembly;
-			}
-			set
-			{
-				assembly = value;
-			}
-		}
+		public Assembly Assembly { get; set; }
 
 		/// <summary>Gets or sets the command line to use when creating a new <see cref="T:System.Configuration.Install.InstallContext" /> object for the assembly's installation.</summary>
 		/// <returns>An array of type <see cref="T:System.String" /> that represents the command line to use when creating a new <see cref="T:System.Configuration.Install.InstallContext" /> object for the assembly's installation.</returns>
 		[ResDescription("Desc_AssemblyInstaller_CommandLine")]
-		public string[] CommandLine
-		{
-			get
-			{
-				return commandLine;
-			}
-			set
-			{
-				commandLine = value;
-			}
-		}
+		public string[] CommandLine { get; set; }
 
 		/// <summary>Gets the help text for all the installers in the installer collection.</summary>
 		/// <returns>The help text for all the installers in the installer collection, including the description of what each installer does and the command-line options (for the installation program) that can be passed to and understood by each installer.</returns>
@@ -59,19 +31,19 @@ namespace System.Configuration.Install
 		{
 			get
 			{
-				if (Path != null && Path.Length > 0)
+				if (!string.IsNullOrEmpty(Path))
 				{
-					base.Context = new InstallContext(null, new string[0]);
-					if (!initialized)
+					Context = new InstallContext(null, new string[0]);
+					if (!_initialized)
 					{
 						InitializeFromAssembly();
 					}
 				}
-				if (helpPrinted)
+				if (_helpPrinted)
 				{
 					return base.HelpText;
 				}
-				helpPrinted = true;
+				_helpPrinted = true;
 				return Res.GetString("InstallAssemblyHelp") + "\r\n" + base.HelpText;
 			}
 		}
@@ -83,36 +55,26 @@ namespace System.Configuration.Install
 		{
 			get
 			{
-				if (assembly == (Assembly)null)
+				if (Assembly == null)
 				{
 					return null;
 				}
-				return assembly.Location;
+				return Assembly.Location;
 			}
 			set
 			{
 				if (value == null)
 				{
-					assembly = null;
+					Assembly = null;
 				}
-				assembly = Assembly.LoadFrom(value);
+				Assembly = Assembly.LoadFrom(value);
 			}
 		}
 
 		/// <summary>Gets or sets a value indicating whether to create a new <see cref="T:System.Configuration.Install.InstallContext" /> object for the assembly's installation.</summary>
 		/// <returns>true if a new <see cref="T:System.Configuration.Install.InstallContext" /> object should be created for the assembly's installation; otherwise, false. The default is true.</returns>
 		[ResDescription("Desc_AssemblyInstaller_UseNewContext")]
-		public bool UseNewContext
-		{
-			get
-			{
-				return useNewContext;
-			}
-			set
-			{
-				useNewContext = value;
-			}
-		}
+		public bool UseNewContext { get; set; }
 
 		/// <summary>Initializes a new instance of the <see cref="T:System.Configuration.Install.AssemblyInstaller" /> class.</summary>
 		public AssemblyInstaller()
@@ -125,8 +87,8 @@ namespace System.Configuration.Install
 		public AssemblyInstaller(string fileName, string[] commandLine)
 		{
 			Path = System.IO.Path.GetFullPath(fileName);
-			this.commandLine = commandLine;
-			useNewContext = true;
+			CommandLine = commandLine;
+			UseNewContext = true;
 		}
 
 		/// <summary>Initializes a new instance of the <see cref="T:System.Configuration.Install.AssemblyInstaller" /> class, and specifies both the assembly to install and the command line to use when creating a new <see cref="T:System.Configuration.Install.InstallContext" /> object.</summary>
@@ -135,8 +97,8 @@ namespace System.Configuration.Install
 		public AssemblyInstaller(Assembly assembly, string[] commandLine)
 		{
 			Assembly = assembly;
-			this.commandLine = commandLine;
-			useNewContext = true;
+			CommandLine = commandLine;
+			UseNewContext = true;
 		}
 
 		/// <summary>Checks to see if the specified assembly can be installed.</summary>
@@ -144,7 +106,7 @@ namespace System.Configuration.Install
 		/// <exception cref="T:System.Exception">The specified assembly cannot be installed. </exception>
 		public static void CheckIfInstallable(string assemblyName)
 		{
-			AssemblyInstaller assemblyInstaller = new AssemblyInstaller();
+			var assemblyInstaller = new AssemblyInstaller();
 			assemblyInstaller.UseNewContext = false;
 			assemblyInstaller.Path = assemblyName;
 			assemblyInstaller.CommandLine = new string[0];
@@ -158,10 +120,10 @@ namespace System.Configuration.Install
 
 		private InstallContext CreateAssemblyContext()
 		{
-			InstallContext installContext = new InstallContext(System.IO.Path.ChangeExtension(Path, ".InstallLog"), CommandLine);
-			if (base.Context != null)
+			var installContext = new InstallContext(System.IO.Path.ChangeExtension(Path, ".InstallLog"), CommandLine);
+			if (Context != null)
 			{
-				installContext.Parameters["logtoconsole"] = base.Context.Parameters["logtoconsole"];
+				installContext.Parameters["logtoconsole"] = Context.Parameters["logtoconsole"];
 			}
 			installContext.Parameters["assemblypath"] = Path;
 			return installContext;
@@ -172,42 +134,42 @@ namespace System.Configuration.Install
 			Type[] array = null;
 			try
 			{
-				array = GetInstallerTypes(assembly);
+				array = GetInstallerTypes(Assembly);
 			}
 			catch (Exception ex)
 			{
-				base.Context.LogMessage(Res.GetString("InstallException", Path));
-				Installer.LogException(ex, base.Context);
-				base.Context.LogMessage(Res.GetString("InstallAbort", Path));
+				Context.LogMessage(Res.GetString("InstallException", Path));
+				LogException(ex, Context);
+				Context.LogMessage(Res.GetString("InstallAbort", Path));
 				throw new InvalidOperationException(Res.GetString("InstallNoInstallerTypes", Path), ex);
 			}
 			if (array == null || array.Length == 0)
 			{
-				base.Context.LogMessage(Res.GetString("InstallNoPublicInstallers", Path));
+				Context.LogMessage(Res.GetString("InstallNoPublicInstallers", Path));
 			}
 			else
 			{
-				for (int i = 0; i < array.Length; i++)
+				for (var i = 0; i < array.Length; i++)
 				{
 					try
 					{
-						Installer value = (Installer)Activator.CreateInstance(array[i], BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance, null, new object[0], null);
-						base.Installers.Add(value);
+						var value = (Installer)Activator.CreateInstance(array[i], BindingFlags.Instance | BindingFlags.Public | BindingFlags.CreateInstance, null, new object[0], null);
+						Installers.Add(value);
 					}
 					catch (Exception ex2)
 					{
-						base.Context.LogMessage(Res.GetString("InstallCannotCreateInstance", array[i].FullName));
-						Installer.LogException(ex2, base.Context);
+						Context.LogMessage(Res.GetString("InstallCannotCreateInstance", array[i].FullName));
+						LogException(ex2, Context);
 						throw new InvalidOperationException(Res.GetString("InstallCannotCreateInstance", array[i].FullName), ex2);
 					}
 				}
-				initialized = true;
+				_initialized = true;
 			}
 		}
 
 		private string GetInstallStatePath(string assemblyPath)
 		{
-			string text = base.Context.Parameters["InstallStateDir"];
+			var text = Context.Parameters["InstallStateDir"];
 			assemblyPath = System.IO.Path.ChangeExtension(assemblyPath, ".InstallState");
 			if (string.IsNullOrEmpty(text))
 			{
@@ -224,7 +186,7 @@ namespace System.Configuration.Install
 		public override void Commit(IDictionary savedState)
 		{
 			PrintStartText(Res.GetString("InstallActivityCommitting"));
-			if (!initialized)
+			if (!_initialized)
 			{
 				InitializeFromAssembly();
 			}
@@ -240,9 +202,9 @@ namespace System.Configuration.Install
 			}
 			finally
 			{
-				if (base.Installers.Count == 0)
+				if (Installers.Count == 0)
 				{
-					base.Context.LogMessage(Res.GetString("RemovingInstallState"));
+					Context.LogMessage(Res.GetString("RemovingInstallState"));
 					File.Delete(installStatePath);
 				}
 			}
@@ -251,12 +213,12 @@ namespace System.Configuration.Install
 
 		private static Type[] GetInstallerTypes(Assembly assem)
 		{
-			ArrayList arrayList = new ArrayList();
-			Module[] modules = assem.GetModules();
-			for (int i = 0; i < modules.Length; i++)
+			var arrayList = new ArrayList();
+			var modules = assem.GetModules();
+			for (var i = 0; i < modules.Length; i++)
 			{
-				Type[] types = modules[i].GetTypes();
-				for (int j = 0; j < types.Length; j++)
+				var types = modules[i].GetTypes();
+				for (var j = 0; j < types.Length; j++)
 				{
 					if (typeof(Installer).IsAssignableFrom(types[j]) && !types[j].IsAbstract && types[j].IsPublic && ((RunInstallerAttribute)TypeDescriptor.GetAttributes(types[j])[typeof(RunInstallerAttribute)]).RunInstaller)
 					{
@@ -274,11 +236,11 @@ namespace System.Configuration.Install
 		public override void Install(IDictionary savedState)
 		{
 			PrintStartText(Res.GetString("InstallActivityInstalling"));
-			if (!initialized)
+			if (!_initialized)
 			{
 				InitializeFromAssembly();
 			}
-			Hashtable hashtable = new Hashtable();
+			var hashtable = new Hashtable();
 			savedState = hashtable;
 			try
 			{
@@ -299,33 +261,33 @@ namespace System.Configuration.Install
 		{
 			if (UseNewContext)
 			{
-				InstallContext installContext = CreateAssemblyContext();
-				if (base.Context != null)
+				var installContext = CreateAssemblyContext();
+				if (Context != null)
 				{
-					base.Context.LogMessage(Res.GetString("InstallLogContent", Path));
-					base.Context.LogMessage(Res.GetString("InstallFileLocation", installContext.Parameters["logfile"]));
+					Context.LogMessage(Res.GetString("InstallLogContent", Path));
+					Context.LogMessage(Res.GetString("InstallFileLocation", installContext.Parameters["logfile"]));
 				}
-				base.Context = installContext;
+				Context = installContext;
 			}
-			base.Context.LogMessage(string.Format(CultureInfo.InvariantCulture, activity, new object[1]
+			Context.LogMessage(string.Format(CultureInfo.InvariantCulture, activity, new object[1]
 			{
 				Path
 			}));
-			base.Context.LogMessage(Res.GetString("InstallLogParameters"));
-			if (base.Context.Parameters.Count == 0)
+			Context.LogMessage(Res.GetString("InstallLogParameters"));
+			if (Context.Parameters.Count == 0)
 			{
-				base.Context.LogMessage("   " + Res.GetString("InstallLogNone"));
+				Context.LogMessage("   " + Res.GetString("InstallLogNone"));
 			}
-			IDictionaryEnumerator dictionaryEnumerator = (IDictionaryEnumerator)base.Context.Parameters.GetEnumerator();
+			var dictionaryEnumerator = (IDictionaryEnumerator)Context.Parameters.GetEnumerator();
 			while (dictionaryEnumerator.MoveNext())
 			{
-				string text = (string)dictionaryEnumerator.Key;
-				string str = (string)dictionaryEnumerator.Value;
+				var text = (string)dictionaryEnumerator.Key;
+				var str = (string)dictionaryEnumerator.Value;
 				if (text.Equals("password", StringComparison.InvariantCultureIgnoreCase))
 				{
 					str = "********";
 				}
-				base.Context.LogMessage("   " + text + " = " + str);
+				Context.LogMessage("   " + text + " = " + str);
 			}
 		}
 
@@ -337,7 +299,7 @@ namespace System.Configuration.Install
 		public override void Rollback(IDictionary savedState)
 		{
 			PrintStartText(Res.GetString("InstallActivityRollingBack"));
-			if (!initialized)
+			if (!_initialized)
 			{
 				InitializeFromAssembly();
 			}
@@ -367,11 +329,11 @@ namespace System.Configuration.Install
 		public override void Uninstall(IDictionary savedState)
 		{
 			PrintStartText(Res.GetString("InstallActivityUninstalling"));
-			if (!initialized)
+			if (!_initialized)
 			{
 				InitializeFromAssembly();
 			}
-			string installStatePath = GetInstallStatePath(Path);
+			var installStatePath = GetInstallStatePath(Path);
 			if (installStatePath != null && File.Exists(installStatePath))
 			{
 				try
@@ -381,7 +343,7 @@ namespace System.Configuration.Install
 				}
 				catch
 				{
-					base.Context.LogMessage(Res.GetString("InstallSavedStateFileCorruptedWarning", Path, installStatePath));
+					Context.LogMessage(Res.GetString("InstallSavedStateFileCorruptedWarning", Path, installStatePath));
 					savedState = null;
 				}
 			}
@@ -390,7 +352,7 @@ namespace System.Configuration.Install
 				savedState = null;
 			}
 			base.Uninstall(savedState);
-			if (installStatePath != null && installStatePath.Length != 0)
+			if (!string.IsNullOrEmpty(installStatePath))
 			{
 				try
 				{

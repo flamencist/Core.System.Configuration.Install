@@ -213,7 +213,7 @@ namespace System.Configuration.Install
 		{
 			if (loader == null)
 			{
-				Res value = new Res();
+				var value = new Res();
 				Interlocked.CompareExchange(ref loader, value, null);
 			}
 			return loader;
@@ -221,17 +221,17 @@ namespace System.Configuration.Install
 
 		public static string GetString(string name, params object[] args)
 		{
-			Res res = GetLoader();
+			var res = GetLoader();
 			if (res == null)
 			{
 				return null;
 			}
-			string @string = res.resources.GetString(name, Culture);
+			var @string = res.resources.GetString(name, Culture);
 			if (args != null && args.Length != 0)
 			{
-				for (int i = 0; i < args.Length; i++)
+				for (var i = 0; i < args.Length; i++)
 				{
-					string text = args[i] as string;
+					var text = args[i] as string;
 					if (text != null && text.Length > 1024)
 					{
 						args[i] = text.Substring(0, 1021) + "...";

@@ -5,16 +5,16 @@ namespace System.Configuration.Install
 	[AttributeUsage(AttributeTargets.All)]
 	internal sealed class ResDescriptionAttribute : DescriptionAttribute
 	{
-		private bool replaced;
+		private bool _replaced;
 
 		public override string Description
 		{
 			get
 			{
-				if (!replaced)
+				if (!_replaced)
 				{
-					replaced = true;
-					base.DescriptionValue = Res.GetString(base.Description);
+					_replaced = true;
+					DescriptionValue = Res.GetString(base.Description);
 				}
 				return base.Description;
 			}

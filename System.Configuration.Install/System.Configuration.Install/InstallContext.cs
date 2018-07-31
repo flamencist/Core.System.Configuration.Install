@@ -8,11 +8,9 @@ namespace System.Configuration.Install
 	/// <summary>Contains information about the current installation.</summary>
 	public class InstallContext
 	{
-		private StringDictionary parameters;
-
 		/// <summary>Gets the command-line parameters that were entered when InstallUtil.exe was run.</summary>
 		/// <returns>A <see cref="T:System.Collections.Specialized.StringDictionary" /> that represents the command-line parameters that were entered when the installation executable was run.</returns>
-		public StringDictionary Parameters => parameters;
+		public StringDictionary Parameters { get; }
 
 		/// <summary>Initializes a new instance of the <see cref="T:System.Configuration.Install.InstallContext" /> class.</summary>
 		public InstallContext()
@@ -25,7 +23,7 @@ namespace System.Configuration.Install
 		/// <param name="commandLine">The command-line parameters entered when running the installation program, or null if none were entered. </param>
 		public InstallContext(string logFilePath, string[] commandLine)
 		{
-			parameters = ParseCommandLine(commandLine);
+			Parameters = ParseCommandLine(commandLine);
 			if (Parameters["logfile"] == null && logFilePath != null)
 			{
 				Parameters["logfile"] = logFilePath;
@@ -37,7 +35,7 @@ namespace System.Configuration.Install
 		/// <param name="paramName">The name of the command-line parameter to check. </param>
 		public bool IsParameterTrue(string paramName)
 		{
-			string text = Parameters[paramName.ToLower(CultureInfo.InvariantCulture)];
+			var text = Parameters[paramName.ToLower(CultureInfo.InvariantCulture)];
 			if (text == null)
 			{
 				return false;
@@ -97,18 +95,18 @@ namespace System.Configuration.Install
 		/// <param name="args">An array containing the command-line parameters. </param>
 		protected static StringDictionary ParseCommandLine(string[] args)
 		{
-			StringDictionary stringDictionary = new StringDictionary();
+			var stringDictionary = new StringDictionary();
 			if (args == null)
 			{
 				return stringDictionary;
 			}
-			for (int i = 0; i < args.Length; i++)
+			for (var i = 0; i < args.Length; i++)
 			{
 				if (args[i].StartsWith("/", StringComparison.Ordinal) || args[i].StartsWith("-", StringComparison.Ordinal))
 				{
 					args[i] = args[i].Substring(1);
 				}
-				int num = args[i].IndexOf('=');
+				var num = args[i].IndexOf('=');
 				if (num < 0)
 				{
 					stringDictionary[args[i].ToLower(CultureInfo.InvariantCulture)] = "";

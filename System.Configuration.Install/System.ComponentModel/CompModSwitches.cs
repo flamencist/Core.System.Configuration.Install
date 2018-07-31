@@ -4,17 +4,17 @@ namespace System.ComponentModel
 {
 	internal static class CompModSwitches
 	{
-		private static TraceSwitch installerDesign;
+		private static TraceSwitch _installerDesign;
 
 		public static TraceSwitch InstallerDesign
 		{
 			get
 			{
-				if (installerDesign == null)
+				if (_installerDesign == null)
 				{
-					installerDesign = new TraceSwitch("InstallerDesign", "Enable tracing for design-time code for installers");
+					_installerDesign = new TraceSwitch("InstallerDesign", "Enable tracing for design-time code for installers");
 				}
-				return installerDesign;
+				return _installerDesign;
 			}
 		}
 	}

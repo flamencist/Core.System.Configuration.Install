@@ -9,7 +9,7 @@ namespace System.Configuration.Install
 		/// <summary>Initializes a new instance of the <see cref="T:System.Configuration.Install.InstallException" /> class.</summary>
 		public InstallException()
 		{
-			base.HResult = -2146232057;
+			HResult = -2146232057;
 		}
 
 		/// <summary>Initializes a new instance of the <see cref="T:System.Configuration.Install.InstallException" /> class, and specifies the message to display to the user.</summary>
