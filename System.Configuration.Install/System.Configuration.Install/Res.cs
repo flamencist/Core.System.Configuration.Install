@@ -196,27 +196,27 @@ namespace System.Configuration.Install
 
 		internal const string PCI_UninstallAction = "PCI_UninstallAction";
 
-		private static Res loader;
+		private static Res _loader;
 
-		private ResourceManager resources;
+		private ResourceManager _resources;
 
 		private static CultureInfo Culture => null;
 
-		public static ResourceManager Resources => GetLoader().resources;
+		public static ResourceManager Resources => GetLoader()._resources;
 
 		internal Res()
 		{
-			resources = new ResourceManager("System.Configuration.Install", GetType().Assembly);
+			_resources = new ResourceManager("System.Configuration.Install.Resources", GetType().Assembly);
 		}
 
 		private static Res GetLoader()
 		{
-			if (loader == null)
+			if (_loader == null)
 			{
 				var value = new Res();
-				Interlocked.CompareExchange(ref loader, value, null);
+				Interlocked.CompareExchange(ref _loader, value, null);
 			}
-			return loader;
+			return _loader;
 		}
 
 		public static string GetString(string name, params object[] args)
@@ -226,7 +226,7 @@ namespace System.Configuration.Install
 			{
 				return null;
 			}
-			var @string = res.resources.GetString(name, Culture);
+			var @string = res._resources.GetString(name, Culture);
 			if (args != null && args.Length != 0)
 			{
 				for (var i = 0; i < args.Length; i++)
@@ -244,7 +244,7 @@ namespace System.Configuration.Install
 
 		public static string GetString(string name)
 		{
-			return GetLoader()?.resources.GetString(name, Culture);
+			return GetLoader()?._resources.GetString(name, Culture);
 		}
 
 		public static string GetString(string name, out bool usedFallback)
@@ -255,7 +255,7 @@ namespace System.Configuration.Install
 
 		public static object GetObject(string name)
 		{
-			return GetLoader()?.resources.GetObject(name, Culture);
+			return GetLoader()?._resources.GetObject(name, Culture);
 		}
 	}
 }

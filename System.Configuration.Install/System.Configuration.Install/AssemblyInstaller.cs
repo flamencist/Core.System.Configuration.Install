@@ -3,7 +3,10 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization.Json;
+using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace System.Configuration.Install
 {
@@ -248,7 +251,6 @@ namespace System.Configuration.Install
 			}
 			finally
 			{
-				
 				var serialized = JsonConvert.SerializeObject(savedState);
 				using (var writer = File.CreateText(GetInstallStatePath(Path)))
 				{
@@ -307,6 +309,7 @@ namespace System.Configuration.Install
 
 			if (File.Exists(installStatePath))
 			{
+				
 				var serialized = File.ReadAllText(installStatePath);
 				savedState = JsonConvert.DeserializeObject<IDictionary>(serialized);
 			}

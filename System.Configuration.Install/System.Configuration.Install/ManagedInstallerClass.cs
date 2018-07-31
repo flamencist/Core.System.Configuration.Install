@@ -20,7 +20,7 @@ namespace System.Configuration.Install
 				var arrayList = new ArrayList();
 				for (var i = 0; i < args.Length; i++)
 				{
-					if (args[i].StartsWith("/", StringComparison.Ordinal) || args[i].StartsWith("-", StringComparison.Ordinal))
+					if (args[i].StartsWith("-", StringComparison.Ordinal))
 					{
 						var strA = args[i].Substring(1);
 						if (string.Compare(strA, "u", StringComparison.OrdinalIgnoreCase) == 0 || string.Compare(strA, "uninstall", StringComparison.OrdinalIgnoreCase) == 0)
