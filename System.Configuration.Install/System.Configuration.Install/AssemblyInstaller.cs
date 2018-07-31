@@ -3,9 +3,9 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
-using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
+using Newtonsoft.Json;
 
 namespace System.Configuration.Install
 {
@@ -228,28 +228,18 @@ namespace System.Configuration.Install
 			{
 				InitializeFromAssembly();
 			}
-			string installStatePath = GetInstallStatePath(Path);
-			FileStream fileStream = new FileStream(installStatePath, FileMode.Open, FileAccess.Read);
-			XmlReaderSettings xmlReaderSettings = new XmlReaderSettings();
-			xmlReaderSettings.CheckCharacters = false;
-			xmlReaderSettings.CloseInput = false;
-			XmlReader xmlReader = null;
-			if (fileStream != null)
-			{
-				xmlReader = XmlReader.Create(fileStream, xmlReaderSettings);
-			}
+			var installStatePath = GetInstallStatePath(Path);
+
 			try
 			{
-				if (xmlReader != null)
+				if (File.Exists(installStatePath))
 				{
-					NetDataContractSerializer netDataContractSerializer = new NetDataContractSerializer();
-					savedState = (Hashtable)netDataContractSerializer.ReadObject(xmlReader);
+					var serialized = File.ReadAllText(installStatePath);
+					savedState = JsonConvert.DeserializeObject<IDictionary>(serialized);
 				}
 			}
 			finally
 			{
-				xmlReader?.Close();
-				fileStream?.Close();
 				if (base.Installers.Count == 0)
 				{
 					base.Context.LogMessage(Res.GetString("RemovingInstallState"));
@@ -296,21 +286,11 @@ namespace System.Configuration.Install
 			}
 			finally
 			{
-				FileStream fileStream = new FileStream(GetInstallStatePath(Path), FileMode.Create);
-				XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
-				xmlWriterSettings.Encoding = Encoding.UTF8;
-				xmlWriterSettings.CheckCharacters = false;
-				xmlWriterSettings.CloseOutput = false;
-				XmlWriter xmlWriter = XmlWriter.Create(fileStream, xmlWriterSettings);
-				try
+				
+				var serialized = JsonConvert.SerializeObject(savedState);
+				using (var writer = File.CreateText(GetInstallStatePath(Path)))
 				{
-					NetDataContractSerializer netDataContractSerializer = new NetDataContractSerializer();
-					netDataContractSerializer.WriteObject(xmlWriter, savedState);
-				}
-				finally
-				{
-					xmlWriter.Close();
-					fileStream.Close();
+					writer.Write(serialized);
 				}
 			}
 		}
@@ -361,29 +341,14 @@ namespace System.Configuration.Install
 			{
 				InitializeFromAssembly();
 			}
-			string installStatePath = GetInstallStatePath(Path);
-			FileStream fileStream = new FileStream(installStatePath, FileMode.Open, FileAccess.Read);
-			XmlReaderSettings xmlReaderSettings = new XmlReaderSettings();
-			xmlReaderSettings.CheckCharacters = false;
-			xmlReaderSettings.CloseInput = false;
-			XmlReader xmlReader = null;
-			if (fileStream != null)
+			var installStatePath = GetInstallStatePath(Path);
+
+			if (File.Exists(installStatePath))
 			{
-				xmlReader = XmlReader.Create(fileStream, xmlReaderSettings);
+				var serialized = File.ReadAllText(installStatePath);
+				savedState = JsonConvert.DeserializeObject<IDictionary>(serialized);
 			}
-			try
-			{
-				if (xmlReader != null)
-				{
-					NetDataContractSerializer netDataContractSerializer = new NetDataContractSerializer();
-					savedState = (Hashtable)netDataContractSerializer.ReadObject(xmlReader);
-				}
-			}
-			finally
-			{
-				xmlReader?.Close();
-				fileStream?.Close();
-			}
+
 			try
 			{
 				base.Rollback(savedState);
@@ -409,32 +374,15 @@ namespace System.Configuration.Install
 			string installStatePath = GetInstallStatePath(Path);
 			if (installStatePath != null && File.Exists(installStatePath))
 			{
-				FileStream fileStream = new FileStream(installStatePath, FileMode.Open, FileAccess.Read);
-				XmlReaderSettings xmlReaderSettings = new XmlReaderSettings();
-				xmlReaderSettings.CheckCharacters = false;
-				xmlReaderSettings.CloseInput = false;
-				XmlReader xmlReader = null;
-				if (fileStream != null)
-				{
-					xmlReader = XmlReader.Create(fileStream, xmlReaderSettings);
-				}
 				try
 				{
-					if (xmlReader != null)
-					{
-						NetDataContractSerializer netDataContractSerializer = new NetDataContractSerializer();
-						savedState = (Hashtable)netDataContractSerializer.ReadObject(xmlReader);
-					}
+					var serialized = File.ReadAllText(installStatePath);
+					savedState = JsonConvert.DeserializeObject<IDictionary>(serialized);
 				}
 				catch
 				{
 					base.Context.LogMessage(Res.GetString("InstallSavedStateFileCorruptedWarning", Path, installStatePath));
 					savedState = null;
-				}
-				finally
-				{
-					xmlReader?.Close();
-					fileStream?.Close();
 				}
 			}
 			else
@@ -455,4 +403,5 @@ namespace System.Configuration.Install
 			}
 		}
 	}
+	
 }
