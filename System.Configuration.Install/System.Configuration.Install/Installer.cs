@@ -1,6 +1,8 @@
 using System.Collections;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace System.Configuration.Install
 {
@@ -200,7 +202,7 @@ namespace System.Configuration.Install
 				ex = ex2;
 			}
 			var num =  Convert.ToInt64(savedState["_reserved_lastInstallerAttempted"]);
-			var array = (IDictionary[])savedState["_reserved_nestedSavedStates"];
+			var array = ToDictionaries(savedState["_reserved_nestedSavedStates"]);
 			if (num + 1 != array.Length || num >= Installers.Count)
 			{
 				throw new ArgumentException(Res.GetString("InstallDictionaryCorrupted", "savedState"));
@@ -343,80 +345,56 @@ namespace System.Configuration.Install
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer after all the installers in the <see cref="P:System.Configuration.Install.Installer.Installers" /> property run. </param>
 		protected virtual void OnCommitted(IDictionary savedState)
 		{
-			if (_afterCommitHandler != null)
-			{
-				_afterCommitHandler(this, new InstallEventArgs(savedState));
-			}
+			_afterCommitHandler?.Invoke(this, new InstallEventArgs(savedState));
 		}
 
 		/// <summary>Raises the <see cref="E:System.Configuration.Install.Installer.AfterInstall" /> event.</summary>
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer after all the installers contained in the <see cref="P:System.Configuration.Install.Installer.Installers" /> property have completed their installations. </param>
 		protected virtual void OnAfterInstall(IDictionary savedState)
 		{
-			if (_afterInstallHandler != null)
-			{
-				_afterInstallHandler(this, new InstallEventArgs(savedState));
-			}
+			_afterInstallHandler?.Invoke(this, new InstallEventArgs(savedState));
 		}
 
 		/// <summary>Raises the <see cref="E:System.Configuration.Install.Installer.AfterRollback" /> event.</summary>
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer after the installers contained in the <see cref="P:System.Configuration.Install.Installer.Installers" /> property are rolled back. </param>
 		protected virtual void OnAfterRollback(IDictionary savedState)
 		{
-			if (_afterRollbackHandler != null)
-			{
-				_afterRollbackHandler(this, new InstallEventArgs(savedState));
-			}
+			_afterRollbackHandler?.Invoke(this, new InstallEventArgs(savedState));
 		}
 
 		/// <summary>Raises the <see cref="E:System.Configuration.Install.Installer.AfterUninstall" /> event.</summary>
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer after all the installers contained in the <see cref="P:System.Configuration.Install.Installer.Installers" /> property are uninstalled. </param>
 		protected virtual void OnAfterUninstall(IDictionary savedState)
 		{
-			if (_afterUninstallHandler != null)
-			{
-				_afterUninstallHandler(this, new InstallEventArgs(savedState));
-			}
+			_afterUninstallHandler?.Invoke(this, new InstallEventArgs(savedState));
 		}
 
 		/// <summary>Raises the <see cref="E:System.Configuration.Install.Installer.Committing" /> event.</summary>
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer before the installers in the <see cref="P:System.Configuration.Install.Installer.Installers" /> property are committed. </param>
 		protected virtual void OnCommitting(IDictionary savedState)
 		{
-			if (_beforeCommitHandler != null)
-			{
-				_beforeCommitHandler(this, new InstallEventArgs(savedState));
-			}
+			_beforeCommitHandler?.Invoke(this, new InstallEventArgs(savedState));
 		}
 
 		/// <summary>Raises the <see cref="E:System.Configuration.Install.Installer.BeforeInstall" /> event.</summary>
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer before the installers in the <see cref="P:System.Configuration.Install.Installer.Installers" /> property are installed. This <see cref="T:System.Collections.IDictionary" /> object should be empty at this point. </param>
 		protected virtual void OnBeforeInstall(IDictionary savedState)
 		{
-			if (_beforeInstallHandler != null)
-			{
-				_beforeInstallHandler(this, new InstallEventArgs(savedState));
-			}
+			_beforeInstallHandler?.Invoke(this, new InstallEventArgs(savedState));
 		}
 
 		/// <summary>Raises the <see cref="E:System.Configuration.Install.Installer.BeforeRollback" /> event.</summary>
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer before the installers in the <see cref="P:System.Configuration.Install.Installer.Installers" /> property are rolled back. </param>
 		protected virtual void OnBeforeRollback(IDictionary savedState)
 		{
-			if (_beforeRollbackHandler != null)
-			{
-				_beforeRollbackHandler(this, new InstallEventArgs(savedState));
-			}
+			_beforeRollbackHandler?.Invoke(this, new InstallEventArgs(savedState));
 		}
 
 		/// <summary>Raises the <see cref="E:System.Configuration.Install.Installer.BeforeUninstall" /> event.</summary>
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer before the installers in the <see cref="P:System.Configuration.Install.Installer.Installers" /> property uninstall their installations. </param>
 		protected virtual void OnBeforeUninstall(IDictionary savedState)
 		{
-			if (_beforeUninstallHandler != null)
-			{
-				_beforeUninstallHandler(this, new InstallEventArgs(savedState));
-			}
+			_beforeUninstallHandler?.Invoke(this, new InstallEventArgs(savedState));
 		}
 
 		/// <summary>When overridden in a derived class, restores the pre-installation state of the computer.</summary>
@@ -445,7 +423,7 @@ namespace System.Configuration.Install
 				ex = ex2;
 			}
 			var num = (int)savedState["_reserved_lastInstallerAttempted"];
-			var array = (IDictionary[])savedState["_reserved_nestedSavedStates"];
+			var array = ToDictionaries(savedState["_reserved_nestedSavedStates"]);
 			if (num + 1 != array.Length || num >= Installers.Count)
 			{
 				throw new ArgumentException(Res.GetString("InstallDictionaryCorrupted", "savedState"));
@@ -493,6 +471,16 @@ namespace System.Configuration.Install
 			}
 		}
 
+		private static IDictionary[] ToDictionaries(object savedState)
+		{
+			if (savedState is JArray)
+			{
+				return ((JArray) savedState).Select(_ => _.ToObject<IDictionary>()).ToArray();
+			}
+
+			return (IDictionary[])savedState;
+		}
+
 		/// <summary>When overridden in a derived class, removes an installation.</summary>
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer after the installation was complete. </param>
 		/// <exception cref="T:System.ArgumentException">The saved-state <see cref="T:System.Collections.IDictionary" /> might have been corrupted. </exception>
@@ -513,7 +501,7 @@ namespace System.Configuration.Install
 			IDictionary[] array;
 			if (savedState != null)
 			{
-				array = (IDictionary[])savedState["_reserved_nestedSavedStates"];
+				array = ToDictionaries(savedState["_reserved_nestedSavedStates"]);
 				if (array == null || array.Length != Installers.Count)
 				{
 					throw new ArgumentException(Res.GetString("InstallDictionaryCorrupted", "savedState"));
