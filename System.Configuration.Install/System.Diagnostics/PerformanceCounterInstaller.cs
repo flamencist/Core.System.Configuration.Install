@@ -115,9 +115,9 @@ namespace System.Diagnostics
 			{
 				return false;
 			}
-			for (int i = 0; i < id.Length; i++)
+			for (var i = 0; i < id.Length; i++)
 			{
-				char c = id[i];
+				var c = id[i];
 				if ((i == 0 || i == id.Length - 1) && c == ' ')
 				{
 					return false;

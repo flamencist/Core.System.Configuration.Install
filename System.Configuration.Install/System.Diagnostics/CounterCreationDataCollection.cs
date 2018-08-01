@@ -66,7 +66,7 @@ namespace System.Diagnostics
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            for (int i = 0; i < value.Length; i++)
+            for (var i = 0; i < value.Length; i++)
             {
                 Add(value[i]);
             }
@@ -83,8 +83,8 @@ namespace System.Diagnostics
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            int count = value.Count;
-            for (int i = 0; i < count; i++)
+            var count = value.Count;
+            for (var i = 0; i < count; i++)
             {
                 Add(value[i]);
             }
@@ -161,7 +161,7 @@ namespace System.Diagnostics
             {
                 throw new ArgumentNullException(nameof(value));
             }
-            CounterCreationData counterCreationData = value as CounterCreationData;
+            var counterCreationData = value as CounterCreationData;
             if (counterCreationData == null)
             {
                 throw new ArgumentException("MustAddCounterCreationData");

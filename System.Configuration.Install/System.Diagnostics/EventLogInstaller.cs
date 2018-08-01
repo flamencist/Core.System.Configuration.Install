@@ -96,7 +96,7 @@ namespace System.Diagnostics
 		/// <param name="otherInstaller">The installer to compare. </param>
 		public override bool IsEquivalentInstaller(ComponentInstaller otherInstaller)
 		{
-			EventLogInstaller eventLogInstaller = otherInstaller as EventLogInstaller;
+			var eventLogInstaller = otherInstaller as EventLogInstaller;
 			if (eventLogInstaller == null)
 			{
 				return false;
