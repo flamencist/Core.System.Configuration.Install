@@ -6,16 +6,7 @@ namespace System.ComponentModel
 	{
 		private static TraceSwitch _installerDesign;
 
-		public static TraceSwitch InstallerDesign
-		{
-			get
-			{
-				if (_installerDesign == null)
-				{
-					_installerDesign = new TraceSwitch("InstallerDesign", "Enable tracing for design-time code for installers");
-				}
-				return _installerDesign;
-			}
-		}
+		public static TraceSwitch InstallerDesign => _installerDesign ?? (_installerDesign = new TraceSwitch("InstallerDesign",
+			                                             "Enable tracing for design-time code for installers"));
 	}
 }

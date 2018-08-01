@@ -471,15 +471,6 @@ namespace System.Configuration.Install
 			}
 		}
 
-		private static IDictionary[] ToDictionaries(object savedState)
-		{
-			if (savedState is JArray)
-			{
-				return ((JArray) savedState).Select(_ => _.ToObject<IDictionary>()).ToArray();
-			}
-
-			return (IDictionary[])savedState;
-		}
 
 		/// <summary>When overridden in a derived class, removes an installation.</summary>
 		/// <param name="savedState">An <see cref="T:System.Collections.IDictionary" /> that contains the state of the computer after the installation was complete. </param>
@@ -554,6 +545,16 @@ namespace System.Configuration.Install
 			}
 		}
 
+		private static IDictionary[] ToDictionaries(object savedState)
+		{
+			if (savedState is JArray array)
+			{
+				return array.Select(_ => _.ToObject<IDictionary>()).ToArray();
+			}
+
+			return (IDictionary[])savedState;
+		}
+		
 		private void WriteEventHandlerError(string severity, string eventName, Exception e)
 		{
 			Context.LogMessage(Res.GetString("InstallLogError", severity, eventName, GetType().FullName));
