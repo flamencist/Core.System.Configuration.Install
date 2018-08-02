@@ -39,7 +39,7 @@ ManagedInstallerClass.InstallHelper(new[] {"TestInstaller.dll"});
 
 ## Installation
 
-``` dotnet add package System.Configuration.Install --version 0.1.0-prerelease ``
+``` dotnet add package System.Configuration.Install --version 0.1.0-prerelease ```
 
 ### License
 
