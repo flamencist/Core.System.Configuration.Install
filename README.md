@@ -1,6 +1,6 @@
-# System.Configuration.Install
-[![Build Status](https://travis-ci.org/flamencist/System.Configuration.Install.svg?branch=master)](https://travis-ci.org/flamencist/System.Configuration.Install)
-[![NuGet](https://img.shields.io/nuget/v/System.Configuration.Install.svg)](https://www.nuget.org/packages/System.Configuration.Install/)
+# Core.System.Configuration.Install
+[![Build Status](https://travis-ci.org/flamencist/Core.System.Configuration.Install.svg?branch=master)](https://travis-ci.org/flamencist/Core.System.Configuration.Install)
+[![NuGet](https://img.shields.io/nuget/v/Core.System.Configuration.Install.svg)](https://www.nuget.org/packages/Core.System.Configuration.Install/)
 
 Support System.Configuration.Install for dotnet core. Used version from full framework .NET 4.0.
 
@@ -39,7 +39,7 @@ ManagedInstallerClass.InstallHelper(new[] {"TestInstaller.dll"});
 
 ## Installation
 
-``` dotnet add package System.Configuration.Install --version 0.1.0-prerelease ```
+``` dotnet add package Core.System.Configuration.Install --version 0.1.0-prerelease ```
 
 ### License
 
