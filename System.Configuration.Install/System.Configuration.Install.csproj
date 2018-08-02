@@ -2,12 +2,14 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>System.Configuration.Install</AssemblyName>
+    <AssemblyTitle>System.Configuration.Install</AssemblyTitle>
+    <PackageId>Core.System.Configuration.Install</PackageId>
     <LangVersion>7.2</LangVersion>
     <RootNamespace>
     </RootNamespace>
     <Version>0.1.0-prerelease</Version>
     <Description>Porting of System.Configuration.Install for .NET Core. (.NET 4.0 version)</Description>
-    <Product>System.Configuration.Install</Product>
+    <Product>Core.System.Configuration.Install</Product>
     <PackageLicenseUrl>https://github.com/flamencist/System.Configuration.Install/master/license.md</PackageLicenseUrl>
     <Copyright>Copyright (C) 2018 Alexander Chermyanin</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
