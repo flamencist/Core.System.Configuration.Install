@@ -11,47 +11,47 @@ namespace System.Configuration.Install
 		/// <param name="args">The arguments passed to the Installer Tool.</param>
 		public static void InstallHelper(string[] args)
 		{
-			var flag = false;
-			var flag2 = false;
+			var doUninstall = false;
+			var shouldLoadByName = false;
 			var transactedInstaller = new TransactedInstaller();
-			var flag3 = false;
+			var showHelp = false;
 			try
 			{
 				var arrayList = new ArrayList();
-				for (var i = 0; i < args.Length; i++)
+				foreach (var arg in args)
 				{
-					if (args[i].StartsWith("-", StringComparison.Ordinal))
+					if (arg.StartsWith("-", StringComparison.Ordinal))
 					{
-						var strA = args[i].Substring(1);
+						var strA = arg.Substring(1);
 						if (string.Compare(strA, "u", StringComparison.OrdinalIgnoreCase) == 0 || string.Compare(strA, "uninstall", StringComparison.OrdinalIgnoreCase) == 0)
 						{
-							flag = true;
+							doUninstall = true;
 						}
 						else if (string.Compare(strA, "?", StringComparison.OrdinalIgnoreCase) == 0 || string.Compare(strA, "help", StringComparison.OrdinalIgnoreCase) == 0)
 						{
-							flag3 = true;
+							showHelp = true;
 						}
 						else if (string.Compare(strA, "AssemblyName", StringComparison.OrdinalIgnoreCase) == 0)
 						{
-							flag2 = true;
+							shouldLoadByName = true;
 						}
 						else
 						{
-							arrayList.Add(args[i]);
+							arrayList.Add(arg);
 						}
 					}
 					else
 					{
-						Assembly assembly = null;
+						Assembly assembly;
 						try
 						{
-							assembly = ((!flag2) ? Assembly.LoadFrom(args[i]) : Assembly.Load(args[i]));
+							assembly = shouldLoadByName ? Assembly.Load(arg) : Assembly.LoadFrom(arg);
 						}
 						catch (Exception innerException)
 						{
-							if (args[i].IndexOf('=') != -1)
+							if (arg.IndexOf('=') != -1)
 							{
-								throw new ArgumentException(Res.GetString("InstallFileDoesntExistCommandLine", args[i]), innerException);
+								throw new ArgumentException(Res.GetString("InstallFileDoesntExistCommandLine", arg), innerException);
 							}
 							throw;
 						}
@@ -59,9 +59,9 @@ namespace System.Configuration.Install
 						transactedInstaller.Installers.Add(value);
 					}
 				}
-				if (flag3 || transactedInstaller.Installers.Count == 0)
+				if (showHelp || transactedInstaller.Installers.Count == 0)
 				{
-					flag3 = true;
+					showHelp = true;
 					transactedInstaller.Installers.Add(new AssemblyInstaller());
 					throw new InvalidOperationException(GetHelp(transactedInstaller));
 				}
@@ -69,7 +69,7 @@ namespace System.Configuration.Install
 			}
 			catch (Exception ex)
 			{
-				if (flag3)
+				if (showHelp)
 				{
 					throw ex;
 				}
@@ -114,7 +114,7 @@ namespace System.Configuration.Install
 						}
 					}
 				}
-				else if (!flag)
+				else if (!doUninstall)
 				{
 					IDictionary stateSaver = new Hashtable();
 					transactedInstaller.Install(stateSaver);

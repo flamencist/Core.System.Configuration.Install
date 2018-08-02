@@ -1,0 +1,19 @@
+language: csharp
+mono: none
+dotnet: 2.1.4
+dist: trusty
+sudo: false
+
+install:
+  - dotnet restore
+script:
+  - dotnet build System.Configuration.Install.sln
+  - dotnet test ./System.Configuration.Install.Tests/
+  - dotnet pack
+deploy:
+  skip_cleanup: true
+  provider: script
+  script: dotnet nuget push ./System.Configuration.Install/bin/Debug/System.Configuration.Install*.nupkg -k $NUGET_API_KEY -s $NUGET_SOURCE
+  on:
+    tags: true
+    all_branches: true

@@ -36,19 +36,19 @@
   <data name="InstallSeverityWarning"><value>Warning!</value></data>
   <data name="InstallActivityRollingBack"><value>Rolling back assembly '{0}'.</value></data>
   <data name="InvalidProperty"><value>Invalid value {1} for property {0}</value></data>
-  <data name="InstallHelpMessageStart"><value>Usage: InstallUtil [/u | /uninstall] [option [...]] assembly [[option [...]] assembly] [...]]
+  <data name="InstallHelpMessageStart"><value>Usage: InstallUtil [-u | -uninstall] [option [...]] assembly [[option [...]] assembly] [...]]
 
 InstallUtil executes the installers in each given assembly.
-If the /u or /uninstall switch is specified, it uninstalls
+If the -u or -uninstall switch is specified, it uninstalls
 the assemblies, otherwise it installs them. Unlike other
-options, /u applies to all assemblies, regardless of where it
+options, -u applies to all assemblies, regardless of where it
 appears on the command line.
 
 Installation is done in a transactioned way: If one of the
 assemblies fails to install, the installations of all other
 assemblies are rolled back. Uninstall is not transactioned.
 
-Options take the form /switch=[value]. Any option that occurs
+Options take the form -switch=[value]. Any option that occurs
 before the name of an assembly will apply to that assembly's
 installation. Options are cumulative but overridable - options
 specified for one assembly will apply to the next as well unless
@@ -67,7 +67,7 @@ Options recognized:</value></data>
   <data name="InstallHelpMessageEnd"><value>
 Individual installers used within an assembly may recognize other
 options. To learn about these options, run InstallUtil with the paths
-of the assemblies on the command line along with the /? or /help option.
+of the assemblies on the command line along with the -? or -help option.
 </value></data>
   <data name="CantAddSelf"><value>An installer cannot be added to its own collection.</value></data>
   <data name="InstallCannotCreateInstance"><value>Unable to create an instance of the {0} installer type.</value></data>
@@ -116,23 +116,23 @@ of the assemblies on the command line along with the /? or /help option.
   <data name="CreatingEventLog"><value>Creating EventLog source {0} in log {1}...</value></data>
   <data name="PCI_Counters"><value>The set of counters to install with this category.</value></data>
   <data name="InstallAssemblyHelp"><value>Options for installing any assembly:
-/AssemblyName
+-AssemblyName
  The assembly parameter will be interpreted as an assembly name (Name,
  Locale, PublicKeyToken, Version). The default is to interpret the
  assembly parameter as the filename of the assembly on disk.
 
-/LogFile=[filename]
+-LogFile=[filename]
  File to write progress to. If empty, do not write log. Default
  is &lt;assemblyname&gt;.InstallLog
 
-/LogToConsole={true|false}
+-LogToConsole={true|false}
  If false, suppresses output to the console.
 
-/ShowCallStack
+-ShowCallStack
  If an exception occurs at any point during installation, the call
  stack will be printed to the log.
 
-/InstallStateDir=[directoryname]
+-InstallStateDir=[directoryname]
  Directory in which the .InstallState file will be stored. Default
  is the directory of the assembly.</value></data>
   <data name="InstallNoInstallerTypes"><value>Unable to get installer types in the {0} assembly.</value></data>
