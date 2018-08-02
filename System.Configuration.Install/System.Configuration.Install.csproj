@@ -7,7 +7,7 @@
     <LangVersion>7.2</LangVersion>
     <RootNamespace>
     </RootNamespace>
-    <Version>0.1.0-prerelease</Version>
+    <Version>0.1.2-prerelease</Version>
     <Description>Porting of System.Configuration.Install for .NET Core. (.NET 4.0 version)</Description>
     <Product>Core.System.Configuration.Install</Product>
     <PackageLicenseUrl>https://github.com/flamencist/System.Configuration.Install/master/license.md</PackageLicenseUrl>

@@ -9,7 +9,7 @@ install:
 script:
   - dotnet build System.Configuration.Install.sln
   - dotnet test ./System.Configuration.Install.Tests/
-  - dotnet pack
+  - dotnet pack ./System.Configuration.Install/System.Configuration.Install.csproj 
 deploy:
   skip_cleanup: true
   provider: script
