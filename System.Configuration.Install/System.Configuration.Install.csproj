@@ -7,7 +7,7 @@
     <LangVersion>7.2</LangVersion>
     <RootNamespace>
     </RootNamespace>
-    <Version>0.1.2-prerelease</Version>
+    <Version>0.2.0-prerelease</Version>
     <Description>Porting of System.Configuration.Install for .NET Core. (.NET 4.0 version)</Description>
     <Product>Core.System.Configuration.Install</Product>
     <PackageLicenseUrl>https://github.com/flamencist/Core.System.Configuration.Install/master/license.md</PackageLicenseUrl>
@@ -16,7 +16,7 @@
     <PackageTags>Install, Component</PackageTags>
     <PackageProjectUrl>https://github.com/flamencist/Core.System.Configuration.Install</PackageProjectUrl>
     <RepositoryUrl>https://github.com/flamencist/Core.System.Configuration.Install</RepositoryUrl>
-    <PackageReleaseNotes>initial version</PackageReleaseNotes>
+    <PackageReleaseNotes>fix command paramters parsing</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
