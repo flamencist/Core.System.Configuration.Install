@@ -7,7 +7,7 @@ Support System.Configuration.Install for dotnet core. Used version from full fra
 
 Sample usage 
 TestInstaller.cs
-```
+```cs
 using System.Collections;
 using System.ComponentModel;
 using System.IO;
@@ -33,7 +33,7 @@ namespace TestInstaller
 ```
 
 InstallUtil:
-```
+```cs
 ManagedInstallerClass.InstallHelper(new[] {"TestInstaller.dll"});
 ```
 
