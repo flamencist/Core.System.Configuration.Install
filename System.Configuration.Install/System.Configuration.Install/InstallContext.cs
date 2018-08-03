@@ -102,7 +102,7 @@ namespace System.Configuration.Install
 			}
 			for (var i = 0; i < args.Length; i++)
 			{
-				if (args[i].StartsWith("/", StringComparison.Ordinal) || args[i].StartsWith("-", StringComparison.Ordinal))
+				if (args[i].StartsWith("-", StringComparison.Ordinal))
 				{
 					args[i] = args[i].Substring(1);
 				}
