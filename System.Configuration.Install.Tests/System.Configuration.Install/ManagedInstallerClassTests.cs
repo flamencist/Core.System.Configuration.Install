@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Reflection;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MSTestExtensions;
 
@@ -22,8 +23,18 @@ namespace System.Configuration.Install.Tests.System.Configuration.Install
             
             UnInstallComponent();
             Assert.IsFalse(File.Exists(fileName));
-            Assert.IsFalse(File.Exists(installStateFileName));
+            Assert.IsFalse(File.Exists(installStateFileName));    
             Assert.IsTrue(File.Exists(installLogFileName));
+        }
+
+        [TestMethod]
+        public void Should_Rollback_Component()
+        {
+            var log = new StringBuilder();
+            InstallerLogHandler.Instance.OnLog += (source, message) => { log.AppendLine(message); };
+            Assert.ThrowsException<InvalidOperationException>(() => ManagedInstallerClass.InstallHelper(new[]
+                {"-ThrowException=True", "-AssemblyName",  Assembly.GetExecutingAssembly().GetName().Name}));
+            StringAssert.Contains(log.ToString(), "The ThrowException parameter is detected.");
         }
 
         [TestMethod]

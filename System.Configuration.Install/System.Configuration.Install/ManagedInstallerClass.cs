@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
@@ -75,143 +77,61 @@ namespace System.Configuration.Install
 				}
 				throw new InvalidOperationException(Res.GetString("InstallInitializeException", ex.GetType().FullName, ex.Message));
 			}
-			try
+			var installType = transactedInstaller.Context.Parameters["installtype"];
+			if (installType != null && string.Compare(installType, "notransaction", StringComparison.OrdinalIgnoreCase) == 0)
 			{
-				var text = transactedInstaller.Context.Parameters["installtype"];
-				if (text != null && string.Compare(text, "notransaction", StringComparison.OrdinalIgnoreCase) == 0)
+				var action = transactedInstaller.Context.Parameters["action"];
+				if (action != null && string.Compare(action, "rollback", StringComparison.OrdinalIgnoreCase) == 0)
 				{
-					var text2 = transactedInstaller.Context.Parameters["action"];
-					if (text2 != null && string.Compare(text2, "rollback", StringComparison.OrdinalIgnoreCase) == 0)
+					transactedInstaller.Context.LogMessage(Res.GetString("InstallRollbackNtRun"));
+					for (var j = 0; j < transactedInstaller.Installers.Count; j++)
 					{
-						transactedInstaller.Context.LogMessage(Res.GetString("InstallRollbackNtRun"));
-						for (var j = 0; j < transactedInstaller.Installers.Count; j++)
-						{
-							transactedInstaller.Installers[j].Rollback(null);
-						}
-					}
-					else if (text2 != null && string.Compare(text2, "commit", StringComparison.OrdinalIgnoreCase) == 0)
-					{
-						transactedInstaller.Context.LogMessage(Res.GetString("InstallCommitNtRun"));
-						for (var k = 0; k < transactedInstaller.Installers.Count; k++)
-						{
-							transactedInstaller.Installers[k].Commit(null);
-						}
-					}
-					else if (text2 != null && string.Compare(text2, "uninstall", StringComparison.OrdinalIgnoreCase) == 0)
-					{
-						transactedInstaller.Context.LogMessage(Res.GetString("InstallUninstallNtRun"));
-						for (var l = 0; l < transactedInstaller.Installers.Count; l++)
-						{
-							transactedInstaller.Installers[l].Uninstall(null);
-						}
-					}
-					else
-					{
-						transactedInstaller.Context.LogMessage(Res.GetString("InstallInstallNtRun"));
-						for (var m = 0; m < transactedInstaller.Installers.Count; m++)
-						{
-							transactedInstaller.Installers[m].Install(null);
-						}
+						transactedInstaller.Installers[j].Rollback(null);
 					}
 				}
-				else if (!doUninstall)
+				else if (action != null && string.Compare(action, "commit", StringComparison.OrdinalIgnoreCase) == 0)
 				{
-					IDictionary stateSaver = new Hashtable();
-					transactedInstaller.Install(stateSaver);
+					transactedInstaller.Context.LogMessage(Res.GetString("InstallCommitNtRun"));
+					for (var k = 0; k < transactedInstaller.Installers.Count; k++)
+					{
+						transactedInstaller.Installers[k].Commit(null);
+					}
+				}
+				else if (action != null && string.Compare(action, "uninstall", StringComparison.OrdinalIgnoreCase) == 0)
+				{
+					transactedInstaller.Context.LogMessage(Res.GetString("InstallUninstallNtRun"));
+					for (var l = 0; l < transactedInstaller.Installers.Count; l++)
+					{
+						transactedInstaller.Installers[l].Uninstall(null);
+					}
 				}
 				else
 				{
-					transactedInstaller.Uninstall(null);
+					transactedInstaller.Context.LogMessage(Res.GetString("InstallInstallNtRun"));
+					for (var m = 0; m < transactedInstaller.Installers.Count; m++)
+					{
+						transactedInstaller.Installers[m].Install(null);
+					}
 				}
 			}
-			catch (Exception ex2)
+			else if (!doUninstall)
 			{
-				throw ex2;
+				IDictionary stateSaver = new Hashtable();
+				transactedInstaller.Install(stateSaver);
+			}
+			else
+			{
+				transactedInstaller.Uninstall(null);
 			}
 		}
+
+		
+
 
 		private static string GetHelp(Installer installerWithHelp)
 		{
 			return Res.GetString("InstallHelpMessageStart") + Environment.NewLine + installerWithHelp.HelpText + Environment.NewLine + Res.GetString("InstallHelpMessageEnd") + Environment.NewLine;
 		}
 
-		private static string[] StringToArgs(string cmdLine)
-		{
-			var arrayList = new ArrayList();
-			StringBuilder stringBuilder = null;
-			var flag = false;
-			var flag2 = false;
-			foreach (var c in cmdLine)
-			{
-				if (stringBuilder == null)
-				{
-					if (char.IsWhiteSpace(c))
-					{
-						continue;
-					}
-					stringBuilder = new StringBuilder();
-				}
-				if (flag)
-				{
-					if (flag2)
-					{
-						if (c != '\\' && c != '"')
-						{
-							stringBuilder.Append('\\');
-						}
-						flag2 = false;
-						stringBuilder.Append(c);
-					}
-					else
-					{
-						switch (c)
-						{
-						case '"':
-							flag = false;
-							break;
-						case '\\':
-							flag2 = true;
-							break;
-						default:
-							stringBuilder.Append(c);
-							break;
-						}
-					}
-				}
-				else if (char.IsWhiteSpace(c))
-				{
-					arrayList.Add(stringBuilder.ToString());
-					stringBuilder = null;
-					flag2 = false;
-				}
-				else if (flag2)
-				{
-					stringBuilder.Append(c);
-					flag2 = false;
-				}
-				else
-				{
-					switch (c)
-					{
-					case '^':
-						flag2 = true;
-						break;
-					case '"':
-						flag = true;
-						break;
-					default:
-						stringBuilder.Append(c);
-						break;
-					}
-				}
-			}
-			if (stringBuilder != null)
-			{
-				arrayList.Add(stringBuilder.ToString());
-			}
-			var array = new string[arrayList.Count];
-			arrayList.CopyTo(array);
-			return array;
-		}
 	}
 }

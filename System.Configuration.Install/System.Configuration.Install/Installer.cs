@@ -201,7 +201,7 @@ namespace System.Configuration.Install
 				Context.LogMessage(Res.GetString("InstallCommitException"));
 				ex = ex2;
 			}
-			var num =  Convert.ToInt64(savedState["_reserved_lastInstallerAttempted"]);
+			var num =  Convert.ToInt32(savedState["_reserved_lastInstallerAttempted"]);
 			var array = ToDictionaries(savedState["_reserved_nestedSavedStates"]);
 			if (num + 1 != array.Length || num >= Installers.Count)
 			{
@@ -422,7 +422,7 @@ namespace System.Configuration.Install
 				Context.LogMessage(Res.GetString("InstallRollbackException"));
 				ex = ex2;
 			}
-			var num = (int)savedState["_reserved_lastInstallerAttempted"];
+			var num = Convert.ToInt32(savedState["_reserved_lastInstallerAttempted"]);
 			var array = ToDictionaries(savedState["_reserved_nestedSavedStates"]);
 			if (num + 1 != array.Length || num >= Installers.Count)
 			{

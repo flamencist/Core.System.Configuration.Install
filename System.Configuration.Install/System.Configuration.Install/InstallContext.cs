@@ -88,6 +88,15 @@ namespace System.Configuration.Install
 			{
 				Console.WriteLine(message);
 			}
+
+			try
+			{
+				InstallerLogHandler.Instance.Log(message);
+			}
+			catch 
+			{
+				//no catch
+			}
 		}
 
 		/// <summary>Parses the command-line parameters into a string dictionary.</summary>
