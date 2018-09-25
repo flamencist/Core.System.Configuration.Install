@@ -34,7 +34,23 @@ namespace TestInstaller
 
 InstallUtil:
 ```cs
-ManagedInstallerClass.InstallHelper(new[] {"TestInstaller.dll"});
+   class Program
+    {
+        static int Main(string[] args)
+        {
+            Console.WriteLine($"InstallUtil - {Assembly.GetExecutingAssembly().GetName().Version}");
+            try
+            {
+                ManagedInstallerClass.InstallHelper(args);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return -1;
+            }
+            return 0;
+        }
+    }
 ```
 
 ## Installation
