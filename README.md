@@ -52,6 +52,8 @@ InstallUtil:
         }
     }
 ```
+We can use installUtil as global tool (https://github.com/flamencist/InstallUtil/)
+
 
 ## Installation
 
