@@ -10,7 +10,9 @@ namespace System.Configuration.Install.Tests
         public override void Install(IDictionary stateSaver)
         {
             base.Install(stateSaver);
-            File.Create("test");
+            var path = Context.Parameters.ContainsKey("TestFile")? Context.Parameters["TestFile"]: "test";
+            
+            File.Create(path);
             
             if (Context.IsParameterTrue("ThrowException"))
             {
@@ -20,7 +22,8 @@ namespace System.Configuration.Install.Tests
 
         public override void Uninstall(IDictionary savedState)
         {
-            File.Delete("test");
+            var path = Context.Parameters.ContainsKey("TestFile")? Context.Parameters["TestFile"]: "test";
+            File.Delete(path);
             base.Uninstall(savedState);
         }
         

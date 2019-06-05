@@ -1,43 +1,30 @@
 using System.IO;
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+
 
 namespace System.Configuration.Install.Tests.System.Configuration.Install
 {
-    [TestClass]
+    [Collection("Installer")]
     public class AssemblyInstallerTests
     {
-        private readonly string _installStateDir =
-            Path.Combine(Directory.GetCurrentDirectory(), Guid.NewGuid().ToString().Substring(0, 6)); 
-        
-        [TestInitialize]
-        public void TestInitialize()
+        [Fact]
+        public void Install_Uninstall_Should_Read_State_From_File()
         {
-            Directory.CreateDirectory(_installStateDir);
-        }
-        
-        [TestCleanup]
-        public void TestCleanup()
-        {
-            Directory.Delete(_installStateDir, true);
-        }
-        
-        [TestMethod]
-        public void Install_Uninstall_Read_State_From_File()
-        {
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            var assemblyInstaller = new AssemblyInstaller(executingAssembly,new string[0])
+            var executingAssembly = Assembly.GetExecutingAssembly().Location;
+            var assemblyInstaller = new AssemblyInstaller
             {
-                Context = new InstallContext("/var/log/log.log",new []{"-LogToConsole=true"})
+                Context = new InstallContext("/var/log/log.log",new []{"-LogToConsole=true","-TestFile="+Guid.NewGuid().ToString().Substring(0,6)}),
+                Assembly = Assembly.GetExecutingAssembly()
             };
-            var stateFilePath = assemblyInstaller.GetInstallStatePath(executingAssembly.Location);
+            var stateFilePath = assemblyInstaller.GetInstallStatePath(executingAssembly);
             
             assemblyInstaller.Install(null);
-            Assert.IsTrue(File.Exists(stateFilePath));
-            Assert.IsFalse( string.IsNullOrWhiteSpace(File.ReadAllText(stateFilePath)));
+            Assert.True(File.Exists(stateFilePath));
+            Assert.False( string.IsNullOrWhiteSpace(File.ReadAllText(stateFilePath)));
             
             assemblyInstaller.Uninstall(null);
-            Assert.IsFalse(File.Exists(stateFilePath));
+            Assert.False(File.Exists(stateFilePath));
         }
     }
 }

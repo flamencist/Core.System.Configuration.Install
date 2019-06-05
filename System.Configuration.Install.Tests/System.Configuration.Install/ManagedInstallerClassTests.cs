@@ -1,16 +1,15 @@
 ﻿using System.IO;
 using System.Reflection;
 using System.Text;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MSTestExtensions;
+using Xunit;
 
 namespace System.Configuration.Install.Tests.System.Configuration.Install
 {
-    [TestClass]
+    [Collection("Installer")]
     public class ManagedInstallerClassTests
     {
 
-        [TestMethod]
+        [Fact]
         public void Should_Install_UnInstall_Component()
         {
             const string fileName = "test";
@@ -18,32 +17,35 @@ namespace System.Configuration.Install.Tests.System.Configuration.Install
             var installLogFileName = $"{Assembly.GetExecutingAssembly().GetName().Name}.InstallLog";
 
             InstallComponent();
-            Assert.IsTrue(File.Exists(fileName));
-            Assert.IsTrue(File.Exists(installStateFileName));
+            Assert.True(File.Exists(fileName));
+            Assert.True(File.Exists(installStateFileName));
             
             UnInstallComponent();
-            Assert.IsFalse(File.Exists(fileName));
-            Assert.IsFalse(File.Exists(installStateFileName));    
-            Assert.IsTrue(File.Exists(installLogFileName));
+            Assert.False(File.Exists(fileName));
+            Assert.False(File.Exists(installStateFileName));    
+            Assert.True(File.Exists(installLogFileName));
         }
 
-        [TestMethod]
+        [Fact]
         public void Should_Rollback_Component()
         {
             var log = new StringBuilder();
             InstallerLogHandler.Instance.OnLog += (source, message) => { log.AppendLine(message); };
-            Assert.ThrowsException<InvalidOperationException>(() => ManagedInstallerClass.InstallHelper(new[]
+            Assert.Throws<InvalidOperationException>(() => ManagedInstallerClass.InstallHelper(new[]
                 {"-ThrowException=True", "-AssemblyName",  Assembly.GetExecutingAssembly().GetName().Name}));
-            StringAssert.Contains(log.ToString(), "The ThrowException parameter is detected.");
+            Assert.Contains("The ThrowException parameter is detected.", log.ToString());
         }
 
-        [TestMethod]
-        public void Should_Show_Help()
+        [Theory]
+        [InlineData("-help")]
+        [InlineData("-h")]
+        [InlineData("-?")]
+        public void Should_Show_Help(string argument)
         {
             const string helpMessage = "Usage: InstallUtil [-u | -uninstall] [option [...]] assembly [[option [...]] assembly] [...]]";
-            Assert.ThrowsException<InvalidOperationException>(() => ManagedInstallerClass.InstallHelper(new[] {"-help"}),helpMessage, ExceptionMessageCompareOptions.Contains);
-            Assert.ThrowsException<InvalidOperationException>(() => ManagedInstallerClass.InstallHelper(new[] {"-h"}),helpMessage, ExceptionMessageCompareOptions.Contains);
-            Assert.ThrowsException<InvalidOperationException>(() => ManagedInstallerClass.InstallHelper(new[] {"-?"}),helpMessage, ExceptionMessageCompareOptions.Contains);
+            
+            var ex = Assert.Throws<InvalidOperationException>(() => ManagedInstallerClass.InstallHelper(new[] {argument}));
+            Assert.Contains(helpMessage, ex.Message);
         }
 
         private static void InstallComponent()
