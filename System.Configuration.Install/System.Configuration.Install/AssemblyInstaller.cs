@@ -13,6 +13,7 @@ namespace System.Configuration.Install
 		private static bool _helpPrinted;
 
 		private bool _initialized;
+		private readonly IStateSerializer _stateSerializer = new JsonStateSerializer();
 
 		/// <summary>Gets or sets the assembly to install.</summary>
 		/// <returns>An <see cref="T:System.Reflection.Assembly" /> that defines the assembly to install.</returns>
@@ -167,7 +168,7 @@ namespace System.Configuration.Install
 			}
 		}
 
-		private string GetInstallStatePath(string assemblyPath)
+		internal string GetInstallStatePath(string assemblyPath)
 		{
 			var text = Context.Parameters["InstallStateDir"];
 			assemblyPath = System.IO.Path.ChangeExtension(assemblyPath, ".InstallState");
@@ -197,7 +198,7 @@ namespace System.Configuration.Install
 				if (File.Exists(installStatePath))
 				{
 					var serialized = File.ReadAllText(installStatePath);
-					savedState = JsonConvert.DeserializeObject<IDictionary>(serialized);
+					savedState = _stateSerializer.Deserialize(serialized);
 				}
 			}
 			finally
@@ -248,7 +249,7 @@ namespace System.Configuration.Install
 			}
 			finally
 			{
-				var serialized = JsonConvert.SerializeObject(savedState);
+				var serialized = _stateSerializer.Serialize(savedState);
 				using (var writer = File.CreateText(GetInstallStatePath(Path)))
 				{
 					writer.Write(serialized);
@@ -308,7 +309,7 @@ namespace System.Configuration.Install
 			{
 				
 				var serialized = File.ReadAllText(installStatePath);
-				savedState = JsonConvert.DeserializeObject<IDictionary>(serialized);
+				savedState = _stateSerializer.Deserialize(serialized);
 			}
 
 			try
@@ -339,7 +340,7 @@ namespace System.Configuration.Install
 				try
 				{
 					var serialized = File.ReadAllText(installStatePath);
-					savedState = JsonConvert.DeserializeObject<IDictionary>(serialized);
+					savedState = _stateSerializer.Deserialize(serialized);
 				}
 				catch
 				{
