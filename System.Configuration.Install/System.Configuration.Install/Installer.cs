@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -202,7 +203,7 @@ namespace System.Configuration.Install
 				ex = ex2;
 			}
 			var num =  Convert.ToInt32(savedState["_reserved_lastInstallerAttempted"]);
-			var array = ToDictionaries(savedState["_reserved_nestedSavedStates"]);
+			var array = (IDictionary[])savedState["_reserved_nestedSavedStates"];
 			if (num + 1 != array.Length || num >= Installers.Count)
 			{
 				throw new ArgumentException(Res.GetString("InstallDictionaryCorrupted", "savedState"));
@@ -272,7 +273,7 @@ namespace System.Configuration.Install
 				throw new InvalidOperationException(Res.GetString("InstallEventException", "OnBeforeInstall", GetType().FullName), ex);
 			}
 			var num = -1;
-			var arrayList = new ArrayList();
+			var arrayList = new List<IDictionary>();
 			try
 			{
 				for (var i = 0; i < Installers.Count; i++)
@@ -297,7 +298,7 @@ namespace System.Configuration.Install
 			finally
 			{
 				stateSaver.Add("_reserved_lastInstallerAttempted", num);
-				stateSaver.Add("_reserved_nestedSavedStates", arrayList.ToArray(typeof(IDictionary)));
+				stateSaver.Add("_reserved_nestedSavedStates", arrayList.ToArray());
 			}
 			try
 			{
@@ -423,7 +424,7 @@ namespace System.Configuration.Install
 				ex = ex2;
 			}
 			var num = Convert.ToInt32(savedState["_reserved_lastInstallerAttempted"]);
-			var array = ToDictionaries(savedState["_reserved_nestedSavedStates"]);
+			var array = (IDictionary[])(savedState["_reserved_nestedSavedStates"]);
 			if (num + 1 != array.Length || num >= Installers.Count)
 			{
 				throw new ArgumentException(Res.GetString("InstallDictionaryCorrupted", "savedState"));
@@ -492,7 +493,7 @@ namespace System.Configuration.Install
 			IDictionary[] array;
 			if (savedState != null)
 			{
-				array = ToDictionaries(savedState["_reserved_nestedSavedStates"]);
+				array = (IDictionary[])(savedState["_reserved_nestedSavedStates"]);
 				if (array == null || array.Length != Installers.Count)
 				{
 					throw new ArgumentException(Res.GetString("InstallDictionaryCorrupted", "savedState"));

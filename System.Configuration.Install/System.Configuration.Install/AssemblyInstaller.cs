@@ -13,7 +13,7 @@ namespace System.Configuration.Install
 		private static bool _helpPrinted;
 
 		private bool _initialized;
-		private readonly IStateSerializer _stateSerializer = new JsonStateSerializer();
+		private readonly IStateSerializer _stateSerializer = new XmlStateSerializer();
 
 		/// <summary>Gets or sets the assembly to install.</summary>
 		/// <returns>An <see cref="T:System.Reflection.Assembly" /> that defines the assembly to install.</returns>
@@ -198,7 +198,7 @@ namespace System.Configuration.Install
 				if (File.Exists(installStatePath))
 				{
 					var serialized = File.ReadAllText(installStatePath);
-					savedState = _stateSerializer.Deserialize(serialized);
+					savedState = _stateSerializer.Deserialize<Hashtable>(serialized);
 				}
 			}
 			finally
@@ -309,7 +309,7 @@ namespace System.Configuration.Install
 			{
 				
 				var serialized = File.ReadAllText(installStatePath);
-				savedState = _stateSerializer.Deserialize(serialized);
+				savedState = _stateSerializer.Deserialize<Hashtable>(serialized);
 			}
 
 			try
@@ -340,7 +340,7 @@ namespace System.Configuration.Install
 				try
 				{
 					var serialized = File.ReadAllText(installStatePath);
-					savedState = _stateSerializer.Deserialize(serialized);
+					savedState = _stateSerializer.Deserialize<Hashtable>(serialized);
 				}
 				catch
 				{
