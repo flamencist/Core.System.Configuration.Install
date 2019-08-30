@@ -10,7 +10,7 @@
     <Version>1.0.1</Version>
     <Description>Porting of System.Configuration.Install for .NET Core. (.NET 4.0 version)</Description>
     <Product>Core.System.Configuration.Install</Product>
-    <PackageLicenseUrl>https://github.com/flamencist/Core.System.Configuration.Install/master/license.md</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/flamencist/Core.System.Configuration.Install/blob/master/license.md</PackageLicenseUrl>
     <Copyright>Copyright (C) 2018 Alexander Chermyanin</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageTags>Install, Component</PackageTags>
