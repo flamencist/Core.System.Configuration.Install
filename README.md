@@ -4,6 +4,10 @@
 
 Support System.Configuration.Install for dotnet core. Used version from full framework .NET 4.0.
 
+Help support the project:
+
+<a href="https://www.buymeacoffee.com/flamencist" target="_blank"><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: auto !important;width: auto !important;" ></a>
+
 
 Sample usage 
 TestInstaller.cs
