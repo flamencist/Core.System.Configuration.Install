@@ -10,7 +10,7 @@ namespace System.Configuration.Install.Tests
         public override void Install(IDictionary stateSaver)
         {
             base.Install(stateSaver);
-            File.Create("test");
+            File.Create("test").Dispose();
             
             if (Context.IsParameterTrue("ThrowException"))
             {
