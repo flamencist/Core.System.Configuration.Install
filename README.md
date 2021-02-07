@@ -1,6 +1,7 @@
 # Core.System.Configuration.Install
 [![Build Status](https://travis-ci.com/flamencist/Core.System.Configuration.Install.svg?branch=master)](https://travis-ci.com/github/flamencist/Core.System.Configuration.Install)
 [![NuGet](https://img.shields.io/nuget/v/Core.System.Configuration.Install.svg)](https://www.nuget.org/packages/Core.System.Configuration.Install/)
+[![Total NuGet downloads](https://img.shields.io/nuget/dt/Core.System.Configuration.Install?color=blue&label=downloads&logo=nuget)](https://www.nuget.org/stats/packages/Core.System.Configuration.Install?groupby=Version&groupby=ClientName&groupby=ClientVersion "Total NuGet downloads")
 
 Support System.Configuration.Install for dotnet core. Used version from full framework .NET 4.0.
 
